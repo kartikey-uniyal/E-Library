@@ -52,10 +52,13 @@
     <hr>
     
     <div class="initialize">
-        <!---------------------------------for uploading image (image and upload button)------------------------------------------->
+        <!---------------------------------for uploading image (image and upload button)----------------------------------------->
            <div class="image">
-            <input type="image" id="Image1"  src = "/uploads/blank.jpg" height="350px"  >
+               <!-----------------------------cover image of book----------------------------------->
+            <input type="image" id="Image1"  alt = "what!" src = "/uploads/blank.jpg" height="350px"  >
+            <!---------------------------------upload button---------------------------------------->
             <button onclick="document.getElementById('upload').click(); return false;" class="add" id = "upbtn">UPLOAD NEW IMAGE</button>
+            <!---------------------------------hiding the regular choose file button---------------->
             <input type="file" name = "imagefile" class = "add" id="upload" accept="image/*" onchange = "readURL(this);" style="visibility: hidden"></input><br/>
                 <strong>Chosen file: </strong>
                  <span id = "file-name">None</span>
@@ -96,6 +99,7 @@
     </div>
     </form>
     </div>
+    <!-------------------------PHP code starts here----------------------------------------->
    <?php
 
 $con = mysqli_connect('localhost', 'root', 'root');
@@ -136,7 +140,7 @@ if(isset($_POST['submit'])){
     $destinationfile = 'uploads/' .$imagename;
     move_uploaded_file($imagetmp, $destinationfile);
 
-    $query = "INSERT INTO books(name, author, cover, description, content) 
+    $query = "INSERT INTO books (name, author, cover, description, content) 
     VALUES ('$bookname','$authorname','$imagename','$bookdesc','$bookpdf')";
 
 if(mysqli_query($con, $query)){
