@@ -52,10 +52,14 @@
     <hr>
     
     <div class="initialize">
-        <!---------------------------------for uploading image (image and upload button)----------------------------------------->
+        <!---------------------------------for uploading cover image (image and upload button)----------------------------------------->
            <div class="image">
                <!-----------------------------cover image of book----------------------------------->
-            <input type="image" id="Image1"  alt = "what!" src = "/uploads/blank.jpg" height="350px"  >
+            <?php 
+                $imgUrl = "C:\xampp\htdocs\elibrary\uploads\blank.jpg"; 
+                ?> 
+                <img src="<?= $imgUrl; ?>" id="Image1"  alt = "Add cover image" height="350px"  /> 
+
             <!---------------------------------upload button---------------------------------------->
             <button onclick="document.getElementById('upload').click(); return false;" class="add" id = "upbtn">UPLOAD NEW IMAGE</button>
             <!---------------------------------hiding the regular choose file button---------------->
@@ -102,56 +106,53 @@
     <!-------------------------PHP code starts here----------------------------------------->
    <?php
 
-$con = mysqli_connect('localhost', 'root', 'root');
-mysqli_select_db($con, 'elibrary');
+    require 'connection.php';
 
-/*if(!$con){
-    die("Database connection failed: ". mysqli_connect_error());
-}
-else{
-    echo "connection is set i guess";
-}*/
 
-if(isset($_POST['submit'])){
+    if(isset($_POST['submit'])){
 
-    //echo "submit button is pressed";
+        //echo "submit button is pressed";
 
-    $bookname = $_POST['bookname'];
-    $authorname = $_POST['authorname'];
-    $bookpdf = $_POST['bookpdf'];
-    $image = $_FILES['imagefile'];
-    $bookdesc = $_POST['bookdesc'];
+        $bookname = $_POST['bookname'];
+        $authorname = $_POST['authorname'];
+        $bookpdf = $_POST['bookpdf'];
+        $image = $_FILES['imagefile'];
+        $bookdesc = $_POST['bookdesc'];
 
-    print_r($image);
-    echo "<br/>";
+        print_r($image);
+        echo "<br/>";
 
-    /*print_r($bookname);
-    echo "<br/>";
-    print_r($authorname);*/
+        /*print_r($bookname);
+        echo "<br/>";
+        print_r($authorname);*/
 
-    $imagename = $image['name'];
-    $imagetmp = $image['tmp_name'];
+        $imagename = $image['name'];
+        $imagetmp = $image['tmp_name'];
 
-    /*print_r($imagename);
-    echo "<br/>";
-    print_r($imagetmp);
-    echo "<br/>";*/
+        /*print_r($imagename);
+        echo "<br/>";
+        print_r($imagetmp);
+        echo "<br/>";*/
 
-    $destinationfile = 'uploads/' .$imagename;
-    move_uploaded_file($imagetmp, $destinationfile);
+        $destinationfile = 'uploads/' .$imagename;
+        move_uploaded_file($imagetmp, $destinationfile);
 
-    $query = "INSERT INTO books (name, author, cover, description, content) 
-    VALUES ('$bookname','$authorname','$imagename','$bookdesc','$bookpdf')";
+        $query = "INSERT INTO books (name, author, cover, description, content) 
+        VALUES ('$bookname','$authorname','$imagename','$bookdesc','$bookpdf')";
 
-if(mysqli_query($con, $query)){
-    echo "Records added successfully.";
-} else{
-    echo "ERROR: Could not able to execute $query. " . mysqli_error($con);
-}
-      
-      mysqli_close($con);
-}
+    if(mysqli_query($con, $query)){
 
-?>
+        echo "Records added successfully.";
+   
+    } else{
+     
+        echo "ERROR: Could not able to execute $query. " . mysqli_error($con);
+    
+    }
+        
+        mysqli_close($con);
+    }
+
+    ?>
 </body>
 </html>
