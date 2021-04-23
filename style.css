@@ -5,6 +5,7 @@
 }
 body{
     font-family: 'Montserrat', sans-serif;
+    overflow-y:scroll;
 }
 .header{
     max-width: 1300px;
@@ -53,6 +54,7 @@ nav{
     box-shadow: 0 0 3px;
     border-color: rgba(171, 183, 183, 1);
     transition: transform .5s ease;
+    margin: 5px 5px;
 }
 .book:hover{
     transform: scale(1.03);
@@ -60,7 +62,7 @@ nav{
 .book__image{
     width: 75%;
     height: 75%;
-    display: block;
+    display: inline-block;
    /* margin-left: auto;
     margin-right: auto;*/
 }
@@ -83,8 +85,8 @@ nav{
 }
 #Image1{
     margin-top: 10px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 5px;
+    margin-right: 5px;
     display: block;
     box-shadow: 0 0 5px;
 }
@@ -92,10 +94,11 @@ nav{
     display: block;
     margin-left: auto;
     margin-right: auto;
+    
 }
-#file-name{
-    margin-left: auto;
-    display: inline;
+.upload-area{
+    overflow: hidden;
+    white-space: nowrap;
 }
 .formm{
     padding: auto;

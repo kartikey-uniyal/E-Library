@@ -16,7 +16,9 @@
                     E-Library
                 </div>
                 <nav>
-                    <a href ="addbook.php" class = "add">ADD NEW BOOK</a>
+                    <form action="addbook.php">
+                        <button type="submit" class = "add">ADD NEW BOOK</button>
+                    </form>
                 </nav>
             </div>
     </div>
@@ -30,15 +32,19 @@
     <?php
     require 'connection.php';
 
-    $query = mysqli_query($con, "SELECT * FROM books");
+    $query = mysqli_query($con, "SELECT * FROM books ORDER BY id DESC");
 
+    
     if(mysqli_num_rows($query) > 0){
 
         while($row = mysqli_fetch_array($query)){    
 
             ?>
                 <div class="book">
-                <img src = "/image/blank.jpg" alt = "image not uploaded" width="400px" height="300px" class = "book__image">
+                <a style="display:block" href = "bookinfo.php">
+                <img src ="\uploads\blank.jpg" alt = "image not uploaded" width="400px" height="300px" class = "book__image">
+                </a>
+               
                 </br>
                 <p><strong><?php echo $row['name']; ?></strong></p>
                 <p><strong><?php echo $row['author']; ?></strong></p>
@@ -46,7 +52,7 @@
                 <?php
         }
     }
-?>
+    ?>
     </div>
     </div>
 </body>

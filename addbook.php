@@ -44,7 +44,7 @@
                     E-Library
                 </div>
                 <nav>
-                    <input type="submit" value="SAVE THIS BOOK" name = "submit" class = "add">
+                <button type="submit" value="SAVE THIS BOOK" name = "submit" class = "add">SAVE THIS BOOK</button>
                 </nav>
             </div>
         </div>
@@ -56,42 +56,45 @@
            <div class="image">
                <!-----------------------------cover image of book----------------------------------->
             <?php 
-                $imgUrl = "C:\xampp\htdocs\elibrary\uploads\blank.jpg"; 
+                $imgUrl = "blank.jpg"; 
                 ?> 
-                <img src="<?= $imgUrl; ?>" id="Image1"  alt = "Add cover image" height="350px"  /> 
+                <img src="<?php $imgUrl; ?>" id="Image1"  alt = "Add cover image" height="350px"  /> 
 
             <!---------------------------------upload button---------------------------------------->
-            <button onclick="document.getElementById('upload').click(); return false;" class="add" id = "upbtn">UPLOAD NEW IMAGE</button>
+            <div class = "upload-area">
+            <button onclick="document.getElementById('uploadimg').click(); return false;" class="add" id = "upbtn">UPLOAD NEW IMAGE</button>
+
+
             <!---------------------------------hiding the regular choose file button---------------->
-            <input type="file" name = "imagefile" class = "add" id="upload" accept="image/*" onchange = "readURL(this);" style="visibility: hidden"></input><br/>
-                <strong>Chosen file: </strong>
-                 <span id = "file-name">None</span>
-            <script>
-                let inputFile = document.getElementById('upload');
-                let fileNameField = document.getElementById('file-name');
-                inputFile.addEventListener('change', function(event){
-                    let uploadedFileName = event.target.files[0].name;
-                    fileNameField.textContent = uploadedFileName;
-                })
-            </script>
-           </div>
-        <!---------------------------------for uploading pdf--------------------------------------------------------------
-        <div class="pdf">
-            <input type="file" id="Image1" src = "/image/blank.jpg" height="350px"  ><br/><br/>
-            <button onclick="document.getElementById('upload').click(); return false;" class="add" id = "upbtn">UPLOAD NEW IMAGE</button>
-            <input type="file" class = "add" id="upload" accept="image/*" onchange = "readURL(this);" style="visibility: hidden"></input>
+            <input type="file" name = "imagefile" id="uploadimg" accept="image/*" onchange = "readURL(this);" style="visibility: hidden"></input>
                 <strong>Chosen file: </strong>
                 <span id = "file-name">None</span>
-            </span>
             <script>
-                let inputFile = document.getElementById('upload');
+                let inputFile = document.getElementById('uploadimg');
                 let fileNameField = document.getElementById('file-name');
                 inputFile.addEventListener('change', function(event){
                     let uploadedFileName = event.target.files[0].name;
                     fileNameField.textContent = uploadedFileName;
                 })
             </script>
-        </div>----->
+
+            <button onclick="document.getElementById('uploadpdf').click(); return false;" class="add" id = "upbtn">UPLOAD PDF</button>
+            <input type = "file" name = "bookpdf" id = "uploadpdf" accept = "application/pdf" onchange = "readURL(this);" style="visibility: hidden">
+            </input>
+            <strong>Chosen file: </strong>
+            <span id = "pdf-name" class = "pdf_name">None</span>
+            <script>
+                $(function(){
+                    $("#uploadpdf").change(function(event){
+                        var x = event.target.files[0].name
+                        $(".pdf_name").text(x)
+                    });
+                })
+            </script>
+            </div>
+          
+           </div>
+        
            
           <div class="formm">
               <!--------------------------------------book form--------------------------------------------------------------------->
@@ -119,8 +122,8 @@
         $image = $_FILES['imagefile'];
         $bookdesc = $_POST['bookdesc'];
 
-        print_r($image);
-        echo "<br/>";
+        /*print_r($image);
+        echo "<br/>";*/
 
         /*print_r($bookname);
         echo "<br/>";
@@ -140,15 +143,15 @@
         $query = "INSERT INTO books (name, author, cover, description, content) 
         VALUES ('$bookname','$authorname','$imagename','$bookdesc','$bookpdf')";
 
-    if(mysqli_query($con, $query)){
+        if(mysqli_query($con, $query)){
 
-        echo "Records added successfully.";
+            echo "Records added successfully.";
    
-    } else{
+        } else{
      
-        echo "ERROR: Could not able to execute $query. " . mysqli_error($con);
+            echo "ERROR: Could not able to execute $query. " . mysqli_error($con);
     
-    }
+        }
         
         mysqli_close($con);
     }
