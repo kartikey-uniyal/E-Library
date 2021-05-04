@@ -45,18 +45,6 @@ if(isset($_POST['submit'])){
 
     }
      
-    /*print_r($image);
-    echo "<br/>";*/
-
-    /*print_r($bookName);
-    echo "<br/>";
-    print_r($authorName);*/
-
-    //print_r($bookPdf);
-
-
-    /*print_r($imageType);
-    print_r($pdfType);*/
 
    if(!is_uploaded_file($imageTmp) || $imageType == 'image/jpeg' || !$imageType == 'image/jpg' || !$imageType == 'image/png'){
 
