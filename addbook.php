@@ -68,7 +68,6 @@ if(isset($_POST['submit'])){
         if(mysqli_query($con, $query)){
 
             header("Location: index.php?added=10");
-            exit;
 
         } else{
 
