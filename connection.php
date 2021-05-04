@@ -3,6 +3,12 @@
     mysqli_select_db($con, 'elibrary');
 
     if(!$con){
-        die("Database connection failed: ". mysqli_connect_error());
+        
+        ?>
+        <script>
+            alert("Connection failed");
+        </script>
+        <?php
+
     }
 ?>

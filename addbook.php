@@ -1,4 +1,112 @@
+<!-------------------------PHP code starts here----------------------------------------->
+<?php
 
+require 'connection.php';
+include 'scripts.php';
+
+if(isset($_POST['submit'])){
+
+    $bookName = $_POST['bookName'];
+    $authorName = $_POST['authorName'];
+    $bookPdf = $_FILES['bookPdf'];
+    $image = $_FILES['imageFile'];
+    $bookDesc = $_POST['bookDesc'];
+
+    /* -------------getting details of image and pdf---------------------*/
+
+    $imageName = $image['name'];
+    $imageTmp = $image['tmp_name'];
+    $imageType = $image['type'];
+
+    $pdfName = $bookPdf['name'];
+    $pdfTmp = $bookPdf['tmp_name'];
+    $pdfType = $bookPdf['type'];
+
+    $bookNameCheck = "SELECT * FROM books WHERE name = '$bookName'";
+    $bookNameCount = mysqli_num_rows(mysqli_query($con, $bookNameCheck));
+
+    /*------------validating the book------------------*/ 
+
+    if(empty($_POST['bookName'])){
+
+        $bookNameError['bookName'] = "Please enter the book name";
+
+    }
+
+    if($bookNameCount > 0){
+
+        $bookNameError['bookName'] = "Book already exist";
+
+    }
+
+    if(empty($_POST['authorName'])){
+
+        $authorNameError['authorName'] = "Please enter the author(s) name ";
+
+    }
+     
+    /*print_r($image);
+    echo "<br/>";*/
+
+    /*print_r($bookName);
+    echo "<br/>";
+    print_r($authorName);*/
+
+    //print_r($bookPdf);
+
+
+    /*print_r($imageType);
+    print_r($pdfType);*/
+
+   if(!is_uploaded_file($imageTmp) || $imageType == 'image/jpeg' || !$imageType == 'image/jpg' || !$imageType == 'image/png'){
+
+        $imageUploadError['imageFile'] = "Please upload image of .jpeg, .jpg or .png extensions only";
+
+   }
+    
+   if(!is_uploaded_file($pdfTmp) || !$pdfType == 'application/pdf'){
+
+        $pdfUploadError['bookPdf'] = "Please upload a valid PDF file";   
+
+    }
+    else{
+
+        if(!empty($_POST['bookName']) && !empty($_POST['authorName']) && $bookNameCount == 0){
+
+        //insert query
+        $query = "INSERT INTO books (name, author, cover, description, content) 
+        VALUES ('$bookName','$authorName','$imageName','$bookDesc','$pdfName')";
+
+        if(mysqli_query($con, $query)){
+
+            header("Location: index.php?added=10");
+            exit;
+
+        } else{
+
+            echo "ERROR: Could not able to execute $query. " . mysqli_error($con);
+
+        }
+    }
+
+    }
+
+    /*print_r($imageName);
+    echo "<br/>";
+    print_r($imageTmp);
+    echo "<br/>";*/
+
+    $destinationFile = 'uploads/' .$imageName;
+    move_uploaded_file($imageTmp, $destinationFile);
+
+    $destinationFile = 'uploads/' .$pdfName;
+    move_uploaded_file($pdfTmp, $destinationFile); 
+
+
+    
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,23 +123,7 @@
         }
         
     </style>
-    <script>
-        function readURL(input)
-        {
-            if(input.files && input.files[0])
-            {
-                var reader = new FileReader();
-                reader.onload = function(e)
-                {
-                    $('#Image1')
-                    .attr('src', e.target.result)
-                    .width(400)
-                    .height(350);
-                };
-            reader.readAsDataURL(input.files[0]);
-            }
-        }
-    </script>
+   
 </head>
 <body>
 
@@ -40,11 +132,16 @@
         <form id = "initialize" method = "POST" enctype="multipart/form-data" runat ="server">
         <div class="header">
             <div class = "navbar">
-                <div class = "logo">
-                    E-Library
-                </div>
+                <a href = "index.php">
+                    <div class = "logo">
+                        E-Library
+                    </div>
+                </a>    
                 <nav>
-                <button type="submit" value="SAVE THIS BOOK" name = "submit" class = "add">SAVE THIS BOOK</button>
+                <button type = "submit" name = "submit" class = "add" style="box-shadow:0 0 10px;">SAVE</button>
+                <a href = "index.php" onClick="javascript:document.location.reload(true)">
+                    <button type = "button" name = "cancel" class = "add" style="box-shadow: 0 0 10px;">CANCEL</button>
+                </a>
                 </nav>
             </div>
         </div>
@@ -52,45 +149,43 @@
     <hr>
     
     <div class="initialize">
-        <!---------------------------------for uploading cover image (image and upload button)----------------------------------------->
            <div class="image">
                <!-----------------------------cover image of book----------------------------------->
-            <?php 
-                $imgUrl = "blank.jpg"; 
-                ?> 
-                <img src="<?php $imgUrl; ?>" id="Image1"  alt = "Add cover image" height="350px"  /> 
 
-            <!---------------------------------upload button---------------------------------------->
+                <img src="uploads/upload.png" class="Image1"  alt = "Add cover image"  /> 
+            <!---------------------------------upload image and pdf button---------------------------------------->
             <div class = "upload-area">
-            <button onclick="document.getElementById('uploadimg').click(); return false;" class="add" id = "upbtn">UPLOAD NEW IMAGE</button>
 
+            <!---------changing the regular choose file button to custom button and adding image name beside it--------------->
 
-            <!---------------------------------hiding the regular choose file button---------------->
-            <input type="file" name = "imagefile" id="uploadimg" accept="image/*" onchange = "readURL(this);" style="visibility: hidden"></input>
-                <strong>Chosen file: </strong>
-                <span id = "file-name">None</span>
-            <script>
-                let inputFile = document.getElementById('uploadimg');
-                let fileNameField = document.getElementById('file-name');
-                inputFile.addEventListener('change', function(event){
-                    let uploadedFileName = event.target.files[0].name;
-                    fileNameField.textContent = uploadedFileName;
-                })
-            </script>
-
-            <button onclick="document.getElementById('uploadpdf').click(); return false;" class="add" id = "upbtn">UPLOAD PDF</button>
-            <input type = "file" name = "bookpdf" id = "uploadpdf" accept = "application/pdf" onchange = "readURL(this);" style="visibility: hidden">
-            </input>
+            <input type = "file" name = "imageFile" id = "real-image-file" hidden = "hidden" accept = "image/*"/>
+            <button type = "button" id = "custom-img-button" class = "add">UPLOAD NEW IMAGE</button>&nbsp;&nbsp;
             <strong>Chosen file: </strong>
-            <span id = "pdf-name" class = "pdf_name">None</span>
-            <script>
-                $(function(){
-                    $("#uploadpdf").change(function(event){
-                        var x = event.target.files[0].name
-                        $(".pdf_name").text(x)
-                    });
-                })
+            <span id = "custom-img-text">No file chosen</span>
+
+            <script type = "text/javascript">
+
+                imgUploadButton();
+
             </script>
+            <br/>
+            <span><?php if(isset($imageUploadError['imageFile'])) echo "<div class = 'error'>". $imageUploadError['imageFile']. "</div>" ?></span>
+
+            <!---------changing the regular choose file button to custom button and adding file name beside it--------------->
+
+            <input type = "file" name = "bookPdf" id = "real-pdf-file" hidden = "hidden" accept="application/pdf"/>
+            <button type = "button" id = "custom-pdf-button" class = "add">UPLOAD BOOK PDF</button>&nbsp;&nbsp;
+            <strong>Chosen file: </strong>
+            <span id = "custom-pdf-text">No file chosen</span>
+
+            <script type = "text/javascript">
+
+                pdfUploadButton();
+
+            </script>
+            <br/>
+            <span><?php if(isset($pdfUploadError['bookPdf'])) echo "<div class = 'error'>". $pdfUploadError['bookPdf']. "</div>" ?></span>
+
             </div>
           
            </div>
@@ -98,64 +193,21 @@
            
           <div class="formm">
               <!--------------------------------------book form--------------------------------------------------------------------->
-            <input type="text" id = "bookname" name = "bookname" placeholder="Add Book Name"><br/>
-            <input type="text" id = "authorname" name = "authorname"placeholder="Add Author Name"><br/>
-            <input type="url" id = "bookpdf" name = "bookpdf" placeholder="Add Book PDF URL"><br/><br/>
-            <textarea rows="5" cols="60" form = "initialize" id = "bookdesc" name = "bookdesc" placeholder="Add Description"></textarea>
+
+            <h2 style="color: #171717;">&nbsp;Write some details here: </h2><br/><br/>
+            <input type="text" id = "bookName" name = "bookName" placeholder="Add Book Name"><br/>
+            <span><?php if(isset($bookNameError['bookName'])) echo "<div class = 'error'>". $bookNameError['bookName']. "</div>"; ?></span>
+
+            <input type="text" id = "authorName" name = "authorName" placeholder="Add Author Name"><br/>
+            <span><?php if(isset($authorNameError['authorName'])) echo "<div class = 'error'>". $authorNameError['authorName']. "</div>" ?></span><br/>
+
+            <textarea rows="5" cols="60" form = "initialize" id = "bookDesc" name = "bookDesc" placeholder="Add Description">
+                
+            </textarea>
           </div>
     </div>
     </form>
     </div>
-    <!-------------------------PHP code starts here----------------------------------------->
-   <?php
-
-    require 'connection.php';
-
-
-    if(isset($_POST['submit'])){
-
-        //echo "submit button is pressed";
-
-        $bookname = $_POST['bookname'];
-        $authorname = $_POST['authorname'];
-        $bookpdf = $_POST['bookpdf'];
-        $image = $_FILES['imagefile'];
-        $bookdesc = $_POST['bookdesc'];
-
-        /*print_r($image);
-        echo "<br/>";*/
-
-        /*print_r($bookname);
-        echo "<br/>";
-        print_r($authorname);*/
-
-        $imagename = $image['name'];
-        $imagetmp = $image['tmp_name'];
-
-        /*print_r($imagename);
-        echo "<br/>";
-        print_r($imagetmp);
-        echo "<br/>";*/
-
-        $destinationfile = 'uploads/' .$imagename;
-        move_uploaded_file($imagetmp, $destinationfile);
-
-        $query = "INSERT INTO books (name, author, cover, description, content) 
-        VALUES ('$bookname','$authorname','$imagename','$bookdesc','$bookpdf')";
-
-        if(mysqli_query($con, $query)){
-
-            echo "Records added successfully.";
-   
-        } else{
-     
-            echo "ERROR: Could not able to execute $query. " . mysqli_error($con);
     
-        }
-        
-        mysqli_close($con);
-    }
-
-    ?>
 </body>
 </html>
