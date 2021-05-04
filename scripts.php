@@ -61,6 +61,7 @@
                         $('.alert').removeClass("show");
                         $('.alert').addClass("hide");
                         $('.alert').addClass("end");
+                        window.location.href = "index.php";
                         },3000);
 
                         $('.close-btn').click(function(){
